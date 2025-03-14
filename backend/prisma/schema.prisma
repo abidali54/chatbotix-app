@@ -1,0 +1,250 @@
+// This is your Prisma schema file
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  name      String
+  chats     Chat[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Chat {
+  id        Int      @id @default(autoincrement())
+  message   String
+  response  String   @db.Text
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+}
+  id             String   @id @default(uuid())
+  email          String   @unique
+  password       String
+  name           String
+  role           Role     @default(USER)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  languagePref   String   @default("en")
+  lastLoginAt    DateTime?
+
+  chatbots       Chatbot[]
+  conversations  Conversation[]
+  subscriptions  Subscription[]
+  orders         Order[]
+  cart           CartItem[]
+  visits         Visit[]
+  abandonedCarts AbandonedCart[]
+}
+
+model Chatbot {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  platform    Platform
+  status      Status   @default(ACTIVE)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  flows       Flow[]
+  conversations Conversation[]
+}
+
+model Flow {
+  id        String   @id @default(uuid())
+  name      String
+  nodes     Json
+  edges     Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  chatbotId String
+  chatbot   Chatbot  @relation(fields: [chatbotId], references: [id])
+}
+
+model Conversation {
+  id        String   @id @default(uuid())
+  status    ConversationStatus @default(ACTIVE)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  chatbotId String
+  chatbot   Chatbot  @relation(fields: [chatbotId], references: [id])
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  messages  Message[]
+}
+
+model Message {
+  id        String   @id @default(uuid())
+  content   String
+  type      MessageType
+  createdAt DateTime @default(now())
+
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id])
+}
+
+model Subscription {
+  id        String   @id @default(uuid())
+  plan      Plan
+  status    SubscriptionStatus
+  startDate DateTime @default(now())
+  endDate   DateTime?
+
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+enum Role {
+  USER
+  ADMIN
+  AGENT
+}
+
+enum Platform {
+  WHATSAPP
+  FACEBOOK
+  MESSENGER
+  INSTAGRAM
+  WEBSITE
+}
+
+enum Status {
+  ACTIVE
+  INACTIVE
+  DELETED
+}
+
+enum ConversationStatus {
+  ACTIVE
+  RESOLVED
+  TRANSFERRED
+}
+
+enum MessageType {
+  USER
+  BOT
+  AGENT
+  SYSTEM
+}
+
+enum Plan {
+  FREE
+  BASIC
+  PRO
+  ENTERPRISE
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELLED
+  EXPIRED
+}
+
+model Product {
+  id              String   @id @default(uuid())
+  name            String
+  description     String
+  price           Float
+  inventory       Int
+  imageUrl        String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  category        String
+  translations    Json?
+  viewCount       Int      @default(0)
+  recommendedWith Product[] @relation("ProductRecommendations")
+  recommendedBy   Product[] @relation("ProductRecommendations")
+
+  cartItems       CartItem[]
+  orderItems      OrderItem[]
+  visits          ProductVisit[]
+}
+
+model CartItem {
+  id        String   @id @default(uuid())
+  quantity  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId    String
+  user      User    @relation(fields: [userId], references: [id])
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+}
+
+model Order {
+  id            String   @id @default(uuid())
+  status        OrderStatus @default(PENDING)
+  totalAmount   Float
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  orderItems    OrderItem[]
+}
+
+model OrderItem {
+  id        String   @id @default(uuid())
+  quantity  Int
+  price     Float
+  createdAt DateTime @default(now())
+
+  orderId   String
+  order     Order   @relation(fields: [orderId], references: [id])
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+}
+
+enum OrderStatus {
+  PENDING
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+model Visit {
+  id        String   @id @default(uuid())
+  sessionId String
+  ipAddress String?
+  userAgent String?
+  path      String
+  duration  Int
+  createdAt DateTime @default(now())
+
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+}
+
+model ProductVisit {
+  id        String   @id @default(uuid())
+  sessionId String
+  createdAt DateTime @default(now())
+
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+}
+
+model AbandonedCart {
+  id         String   @id @default(uuid())
+  items      Json
+  createdAt  DateTime @default(now())
+  recoveredAt DateTime?
+
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+}
