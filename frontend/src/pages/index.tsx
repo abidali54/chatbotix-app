@@ -3,6 +3,9 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { ChatBubbleBottomCenterTextIcon, CubeIcon, ChartBarIcon } from '@heroicons/react/24/outline';
+import React from 'react';
+import { Button } from '../components/ui/button';
+import { Card } from '../components/ui/card';
 
 type FormData = {
   email: string;
