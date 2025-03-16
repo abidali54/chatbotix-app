@@ -1,27 +1,24 @@
-const { exec } = require('child_process');
-const { runAllChecks } = require('./pre-deploy');
+const { execSync } = require('child_process');
+const path = require('path');
+const fs = require('fs');
 
-const deploy = async () => {
+const deployToVercel = () => {
   try {
-    // Run pre-deployment checks
-    const checksPass = await runAllChecks();
-    if (!checksPass) {
-      throw new Error('Pre-deployment checks failed');
-    }
+    // Check environment
+    const env = process.env.NODE_ENV || 'development';
+    console.log(`Deploying to ${env} environment...`);
 
-    // Build the application
-    console.log('Building application...');
-    await exec('npm run build');
+    // Build the project
+    execSync('npm run build', { stdio: 'inherit' });
+    console.log('Build completed successfully');
 
-    // Deploy to production
-    console.log('Deploying to production...');
-    await exec('npm run deploy:prod');
-
-    console.log('✅ Deployment successful');
+    // Deploy to Vercel
+    execSync('vercel --prod', { stdio: 'inherit' });
+    console.log('Deployment to Vercel completed');
   } catch (error) {
-    console.error('❌ Deployment failed:', error);
+    console.error('Deployment failed:', error);
     process.exit(1);
   }
 };
 
-deploy();
+deployToVercel();

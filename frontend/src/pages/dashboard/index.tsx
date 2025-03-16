@@ -2,9 +2,10 @@ import { useState } from 'react';
 import { NextPage } from 'next';
 import { useQuery } from 'react-query';
 import axios from 'axios';
+import React from 'react';
 import DashboardLayout from '@/components/layouts/DashboardLayout';
 import { Card } from '@/components/ui/card';
-import { Activity, MessageSquare, Users, BarChart2, TrendingUp, Clock } from 'lucide-react';
+import { BarChart2, MessageSquare, Users } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 const Dashboard: NextPage = () => {
@@ -239,4 +240,29 @@ const Dashboard: NextPage = () => {
   );
 };
 
+export default function Dashboard() {
+  return (
+    <DashboardLayout>
+      <h1 className="text-2xl font-semibold text-gray-900">Dashboard</h1>
+      
+      <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
+        {stats.map((stat) => (
+          <Card key={stat.name} className="px-4 py-5">
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <stat.icon className="h-6 w-6 text-gray-400" />
+              </div>
+              <div className="ml-5 w-0 flex-1">
+                <dl>
+                  <dt className="text-sm font-medium text-gray-500 truncate">{stat.name}</dt>
+                  <dd className="text-lg font-semibold text-gray-900">{stat.value}</dd>
+                </dl>
+              </div>
+            </div>
+          </Card>
+        ))}
+      </div>
+    </DashboardLayout>
+  );
+}
 export default Dashboard;
