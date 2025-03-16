@@ -1,0 +1,50 @@
+{
+  "version": 2,
+  "notifications": {
+    "deployment": {
+      "successful": true,
+      "failed": true
+    }
+  },
+  "analytics": true,
+  "caching": {
+    "headers": [
+      {
+        "source": "/(.*)",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=31536000, immutable"
+          }
+        ]
+      },
+      {
+        "source": "/api/(.*)",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache, no-store, must-revalidate"
+          }
+        ]
+      }
+    ]
+  }
+}
+{
+  "version": 2,
+  "env": {
+    "VITE_APP_ENV": "production"
+  },
+  "git": {
+    "deploymentEnabled": {
+      "main": true,
+      "develop": true,
+      "feature/*": true
+    }
+  },
+  "github": {
+    "enabled": true,
+    "silent": true,
+    "autoJobCancelation": true
+  }
+}

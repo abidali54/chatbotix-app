@@ -1,0 +1,19 @@
+{
+  "projectId": "chatbotix",
+  "orgId": "your-org-id",
+  "settings": {
+    "framework": "vite",
+    "buildCommand": "npm run build",
+    "outputDirectory": "dist",
+    "devCommand": "npm run dev"
+  },
+  "alias": [
+    "chatbotix-dev.vercel.app",
+    "chatbotix-staging.vercel.app"
+  ],
+  "protection": {
+    "enabled": true,
+    "branchProtection": true,
+    "deploymentProtection": true
+  }
+}
